@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "290281221699",
+    "project_id": "tpestetica-5ad35",
+    "storage_bucket": "tpestetica-5ad35.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:290281221699:android:fadc76af598fd3e6172ef6",
+        "android_client_info": {
+          "package_name": "com.alefexz.TPestetica"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRuAIuAE9mkoAKIg-jAsUnfj17g_Tk08Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
