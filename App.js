@@ -204,8 +204,8 @@ export default function App() {
 
   useEffect(() => { 
     GoogleSignin.configure({ 
-      webClientId: '339897097450-acglm7lrq0l15vsm6hj4u6l2q9tl0qh0.apps.googleusercontent.com', 
-    }); 
+  webClientId: '1059010430905-kl6cfm61nb7lvcg0gtsl53vhnr0soql8.apps.googleusercontent.com', 
+});
     const checkLoginStatus = async () => {
         try {
             const jsonValue = await AsyncStorage.getItem('@user');
