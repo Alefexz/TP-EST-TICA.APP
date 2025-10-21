@@ -203,13 +203,9 @@ export default function App() {
   const [routeParams, setRouteParams] = useState({});
 
   useEffect(() => {
-    // ===================================================================
-    // A CORREÇÃO FINAL ESTÁ AQUI:
-    // Sincronizamos o App.js com as permissões do Google Cloud.
-    // ===================================================================
     GoogleSignin.configure({ 
       webClientId: '1059010430905-kl6cfm61nb7lvcg0gtsl53vhnr0soql8.apps.googleusercontent.com', 
-      scopes: ['profile', 'email'] // <-- AQUI ESTÁ A CORREÇÃO
+      scopes: ['profile', 'email'] // Esta é a correção dos escopos
     });
     const checkLoginStatus = async () => {
         try {
@@ -261,7 +257,7 @@ export default function App() {
           case 'mainApp': return <MainApp {...props} onLogout={handleLogout} />; 
           case 'confirmation': return <ConfirmationScreen {...props} />;
           case 'success': return <SuccessScreen {...props} />;
-//OS ESTILOS ESTÃO IGUAIS AO SEU ORIGINAL
+        // O ERRO DE TEXTO SOLTO FOI REMOVIDO DAQUI
           case 'welcome': default: return <WelcomeScreen {...props} />; 
       } 
   };
@@ -289,7 +285,7 @@ const styles = StyleSheet.create({
   promoCard: { width: '100%', height: 180, borderRadius: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000', overflow: 'hidden', },
   promoImage: { width: '100%', height: '100%', position: 'absolute', opacity: 0.8, },
   promoOverlay: { position: 'absolute', backgroundColor: 'rgba(230, 170, 183, 0.7)', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 15, },
-  promoTitle: { fontSize: 18, fontWeight: 'bold', color: '#FFF', },
+- promoTitle: { fontSize: 18, fontWeight: 'bold', color: '#FFF', },
   promoSubtitle: { fontSize: 14, color: '#FFF', marginTop: 5, },
   tabBar: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 90, paddingTop: 10, paddingBottom: 30, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#F0F0F0', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-start', },
   tabItem: { alignItems: 'center', flex: 1, },
