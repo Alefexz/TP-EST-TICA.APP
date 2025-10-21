@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "290281221699",
-    "project_id": "tpestetica-5ad35",
-    "storage_bucket": "tpestetica-5ad35.firebasestorage.app"
+    "project_number": "1059010430905",
+    "project_id": "tpesteticaapp",
+    "storage_bucket": "tpesteticaapp.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:290281221699:android:df22d338d3ea5216172ef6",
+        "mobilesdk_app_id": "1:1059010430905:android:d19558c6a5ad8ace4e1868",
         "android_client_info": {
           "package_name": "com.alefexz.TPestetica"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1059010430905-sfn3okmv6ne9ffticaavva9dbkq4f4e1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alefexz.TPestetica",
+            "certificate_hash": "0f3f5ed0f356527a224d5bef21ce398424c7b2df"
+          }
+        },
+        {
+          "client_id": "1059010430905-kl6cfm61nb7lvcg0gtsl53vhnr0soql8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCRuAIuAE9mkoAKIg-jAsUnfj17g_Tk08Q"
+          "current_key": "AIzaSyCLkPDozHwfmJT4Cdv7LGdscwkeqL5tAYE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059010430905-kl6cfm61nb7lvcg0gtsl53vhnr0soql8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
