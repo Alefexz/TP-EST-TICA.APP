@@ -5,18 +5,13 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Firebase Imports
 import { initializeApp } from 'firebase/app';
 import {
   initializeAuth, getReactNativePersistence, createUserWithEmailAndPassword,
   signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile
 } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-
-// Image Picker
-import * as ImagePicker from 'expo-image-picker';
+// Imports de Storage e ImagePicker foram removidos
 
 console.log("App.js: Script iniciado.");
 
@@ -32,10 +27,10 @@ const PhoneIcon = () => <Text style={{fontSize: 20, color: '#8A74A8'}}>📱</Tex
 const PersonIcon = () => <Text style={{fontSize: 20, color: '#8A74A8'}}>🧑</Text>;
 const BackArrowIcon = () => <Text style={{ fontSize: 24, color: '#8A74A8' }}>‹</Text>;
 const EyeIcon = ({ closed }) => <Text style={{fontSize: 20, color: '#8A74A8'}}>{closed ? '👁️‍🗨️' : '👁️'}</Text>;
-const CameraIcon = () => <Text style={{fontSize: 16, color: '#FFF'}}>📷</Text>;
+const CheckIcon = () => <Text style={{fontSize: 18, color: '#FFF'}}>✓</Text>;
+const MoneyIcon = () => <Text style={{fontSize: 20, color: '#8A74A8'}}>💳</Text>;
 
-// --- SUA CONFIGURAÇÃO DO FIREBASE (AGORA CORRETA!) ---
-// Esta é a configuração que você copiou do seu console
+// --- SUA CONFIGURAÇÃO DO FIREBASE (VERIFIQUE SE ESTÁ CORRETA) ---
 const firebaseConfig = {
   apiKey: "AIzaSyBHa79_Aj4awAuhujooHG9-VVb8iMHdQ_Y",
   authDomain: "tpesteticaapp.firebaseapp.com",
@@ -45,12 +40,10 @@ const firebaseConfig = {
   appId: "1:1059010430905:web:9fa85d48fe1509664e1868",
   measurementId: "G-YHSHGETNCD"
 };
-// =========================================================================
-
 console.log("App.js: firebaseConfig definida.");
 
 // --- Inicialização ---
-let app; let auth; let db; let storage;
+let app; let auth; let db;
 let firebaseInitializationError = null;
 try {
   console.log("App.js: Tentando inicializar Firebase...");
@@ -60,8 +53,7 @@ try {
   console.log("App.js: initializeAuth OK.");
   db = getFirestore(app);
   console.log("App.js: getFirestore OK.");
-  storage = getStorage(app);
-  console.log("App.js: getStorage OK. Firebase inicializado com sucesso!");
+  console.log("App.js: Firebase (Auth/Firestore) inicializado com sucesso!");
 } catch (error) {
   console.error("ERRO GRAVE NA INICIALIZAÇÃO DO FIREBASE:", error.message);
   firebaseInitializationError = error;
@@ -125,11 +117,9 @@ const RegisterScreen = ({ onNavigate }) => {
  );
 };
 
-// --- NOVA TELA: Completar Perfil ---
 const CompleteProfileScreen = ({ onNavigate }) => {
   const [fullName, setFullName] = useState(''); const [phone, setPhone] = useState(''); const [isLoading, setIsLoading] = useState(false);
   const { user, refreshProfile } = useAuth();
-
   const handleSaveProfile = async () => {
     if (!user || !user.uid || !db) { Alert.alert("Erro", "Usuário ou conexão ausente."); return; }
     if (fullName.trim() === '' || phone.trim() === '') { Alert.alert("Erro", "Preencha Nome Completo e Celular."); return; }
@@ -142,17 +132,14 @@ const CompleteProfileScreen = ({ onNavigate }) => {
         email: user.email,
         photoURL: null,
       }, { merge: true });
-
       await refreshProfile(user.uid);
-      // A navegação será feita pelo useEffect principal
-
+      onNavigate('mainApp');
     } catch (error) {
       setIsLoading(false);
       console.error("Erro ao salvar perfil:", error);
       Alert.alert("Erro", "Não foi possível salvar seu perfil. Verifique as 'Regras' do Firestore no Firebase Console.");
     }
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Quase lá!</Text>
@@ -199,57 +186,286 @@ const HomeScreen = ({ onNavigateToAgendamentos }) => {
           <TouchableOpacity style={styles.serviceCardSmall} onPress={onNavigateToAgendamentos}><Text style={styles.serviceCardSmallText}>Manicure</Text></TouchableOpacity>
           <TouchableOpacity style={styles.serviceCardSmall} onPress={onNavigateToAgendamentos}><Text style={styles.serviceCardSmallText}>Pedicure</Text></TouchableOpacity>
       </View>
-      <View style={{ height: 50 }} />
+      <View style={{ height: 100 }} />
     </ScrollView>
   );
 };
 
+// --- DADOS DOS SERVIÇOS (Removido "Cabelo") ---
 const SERVICES_DATA = [
-  { id: 'manicure', title: 'Manicure', image: 'https://images.unsplash.com/photo-1632345031435-8727f66c0274?q=80&w=400&auto=format&fit=crop', professional: { name: 'Ana Silva', photo: 'https://placehold.co/100x100/E6AAB7/FFF?text=AS' } },
+  { id: 'manicure', title: 'Manicure & Pedicure', image: 'https://images.unsplash.com/photo-1632345031435-8727f66c0274?q=80&w=400&auto=format&fit=crop', professional: { name: 'Ana Silva', photo: 'https://placehold.co/100x100/E6AAB7/FFF?text=AS' } },
   { id: 'estetica', title: 'Estética Facial', image: 'https://images.unsplash.com/photo-1512290923902-8a9f31c83659?q=80&w=400&auto=format&fit=crop', professional: { name: 'Thais de Paulo', photo: 'https://placehold.co/100x100/D4AF37/FFF?text=TD' }, subServices: [
       { id: 'botox', title: 'Aplicação de Botox' },
       { id: 'limpeza', title: 'Limpeza de Pele Profunda' },
       { id: 'peeling', title: 'Peeling Químico Suave' },
     ]
   },
-  { id: 'cabelo', title: 'Cabelo', image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=400&auto=format&fit=crop', professional: { name: 'Carlos Mendes', photo: 'https://placehold.co/100x100/8A74A8/FFF?text=CM' } },
 ];
 
 const BOOKED_TIMES = {
-    '2025-10-23': ['10:00', '14:00'],
-    '2025-10-24': ['11:00', '15:00'],
+    '2025-10-31': ['10:00', '14:00'],
+    '2025-11-01': ['11:00', '15:00'],
 };
+
+// --- CALENDÁRIO 3 SEMANAS (Corrigido) ---
+const CalendarGrid = ({ selectedDate, onDateSelect }) => {
+  const days = [];
+  const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  let startDate = new Date(); 
+
+  for (let i = 0; i < 21; i++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
+    const dateString = date.toISOString().split('T')[0];
+    const dayOfMonth = date.getDate();
+    const dayOfWeek = dayNames[date.getDay()];
+    days.push({ dateString, dayOfMonth, dayOfWeek, id: i });
+  }
+  
+  const weeks = [];
+  for (let i = 0; i < days.length; i += 7) {
+      weeks.push(days.slice(i, i + 7));
+  }
+
+  return (
+      <View style={styles.calendarGrid}>
+          {weeks.map((week, weekIndex) => (
+              <View key={weekIndex} style={styles.calendarRow}>
+                  {week.map((day) => {
+                      const isSelected = selectedDate === day.dateString;
+                      return (
+                          <TouchableOpacity
+                              key={day.id}
+                              style={[styles.dateCell, isSelected && styles.dateCellSelected]}
+                              onPress={() => onDateSelect(day.dateString)}
+                          >
+                              <Text style={[styles.dateDay, isSelected && styles.dateDaySelected]}>{day.dayOfWeek}</Text>
+                              <Text style={[styles.dateText, isSelected && styles.dateTextSelected]}>{day.dayOfMonth}</Text>
+                          </TouchableOpacity>
+                      );
+                  })}
+              </View>
+          ))}
+      </View>
+  );
+};
+
+
 const generateTimeSlots = (selectedDateISO) => { const slots = []; const bookedSlots = BOOKED_TIMES[selectedDateISO] || []; for (let hour = 7; hour <= 17; hour++) { const displayHour = hour.toString().padStart(2, '0'); const displayTime = `${displayHour}:00`; const isBooked = bookedSlots.includes(displayTime); slots.push({ time: displayTime, iso: `${selectedDateISO}T${displayHour}:00:00`, isBooked: isBooked }); } return slots; };
-const CalendarDays = ({ selectedDate, onDateSelect }) => { const today = new Date(); const days = []; const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']; for (let i = 0; i < 5; i++) { const date = new Date(today); date.setDate(today.getDate() + i); const dateString = date.toISOString().split('T')[0]; const dayOfMonth = date.getDate(); const dayOfWeek = dayNames[date.getDay()]; days.push({ dateString, dayOfMonth, dayOfWeek }); } return ( <View style={styles.calendar}>{days.map(day => ( <TouchableOpacity key={day.dateString} style={[styles.dateCell, selectedDate === day.dateString && styles.dateCellSelected]} onPress={() => onDateSelect(day.dateString)}><Text style={[styles.dateText, selectedDate === day.dateString && styles.dateTextSelected]}>{day.dayOfMonth}</Text><Text style={[styles.dateDay, selectedDate === day.dateString && styles.dateDaySelected]}>{day.dayOfWeek}</Text></TouchableOpacity> ))}</View> ); };
 
 const AgendamentosScreen = ({ onNavigate }) => {
   const { user, isGuest } = useAuth(); const [step, setStep] = useState(1); const [selectedService, setSelectedService] = useState(null); const [selectedSubService, setSelectedSubService] = useState(null); const [selectedDate, setSelectedDate] = useState(null); const [selectedTime, setSelectedTime] = useState(null); const [timeSlots, setTimeSlots] = useState([]);
+  
+  const goToPayment = () => {
+    if (!selectedService || !selectedDate || !selectedTime) return;
+    const bookingDetails = {
+      serviceTitle: selectedSubService?.title || selectedService.title,
+      professional: selectedService.professional.name,
+      date: selectedDate,
+      time: selectedTime.time,
+    };
+    onNavigate('payment', { booking: bookingDetails });
+  };
+
   const checkLoginAndProceed = (nextStep) => { if (isGuest || !user) { Alert.alert("Login Necessário", "Crie uma conta ou faça login para agendar.", [{ text: "Cancelar" }, { text: "Login/Cadastro", onPress: () => onNavigate('welcome') }] ); } else { setStep(nextStep); } };
   const handleServiceSelect = (service) => { setSelectedService(service); setSelectedSubService(null); setSelectedDate(null); setSelectedTime(null); if (service.subServices) { setStep(1.5); } else { checkLoginAndProceed(2); } };
   const handleSubServiceSelect = (subService) => { setSelectedSubService(subService); checkLoginAndProceed(2); };
   const handleDateSelect = (dateString) => { setSelectedDate(dateString); setSelectedTime(null); setTimeSlots(generateTimeSlots(dateString)); };
-  const handleConfirmarAgendamento = async () => { if (!auth.currentUser || !user || !selectedService || !selectedTime || !selectedDate) return; const serviceTitle = selectedSubService?.title || selectedService.title; console.log("Agendamento Confirmado:", { userId: user.uid, userEmail: user.email, service: serviceTitle, professional: selectedService.professional.name, date: selectedDate, time: selectedTime.time }); Alert.alert("Agendamento Confirmado!", `Serviço: ${serviceTitle}\nProfissional: ${selectedService.professional.name}\nData: ${selectedDate.split('-').reverse().join('/')}\nHorário: ${selectedTime.time}`); resetFlow(); };
+  
+  const handleConfirmarHorario = () => {
+    goToPayment();
+  };
+  
   const resetFlow = () => { setStep(1); setSelectedService(null); setSelectedSubService(null); setSelectedDate(null); setSelectedTime(null); };
 
-  if (step === 1) { return ( <ScrollView style={styles.page}><Text style={styles.greeting}>Agendar Serviço</Text><Text style={styles.sectionTitle}>Escolha uma Categoria</Text>{SERVICES_DATA.map(service => ( <TouchableOpacity key={service.id} style={styles.serviceCard} onPress={() => handleServiceSelect(service)}><Image source={{ uri: service.image }} style={styles.serviceImage} resizeMode="cover"/><View style={styles.serviceTitleOverlay}><Text style={styles.serviceTitle}>{service.title}</Text></View></TouchableOpacity> ))}<View style={{ height: 50 }} /></ScrollView> ); }
-  else if (step === 1.5) { return ( <ScrollView style={styles.page}><TouchableOpacity style={styles.backButton} onPress={resetFlow}><BackArrowIcon /><Text style={styles.backButtonText}>Categorias</Text></TouchableOpacity><Text style={styles.greeting}>{selectedService.title}</Text><Text style={styles.sectionTitle}>Profissional</Text><View style={styles.proCard}><Image source={{ uri: selectedService.professional.photo }} style={styles.proPhoto} /><Text style={styles.proName}>{selectedService.professional.name}</Text></View><Text style={styles.sectionTitle}>Escolha o Serviço Específico</Text>{selectedService.subServices.map(sub => ( <TouchableOpacity key={sub.id} style={styles.subServiceCard} onPress={() => handleSubServiceSelect(sub)}><Text style={styles.subServiceTitle}>{sub.title}</Text><Text style={styles.subServiceButton}>Selecionar ›</Text></TouchableOpacity> ))}<View style={{ height: 50 }} /></ScrollView> ); }
-  else if (step === 2) { const serviceTitle = selectedSubService?.title || selectedService.title; const backAction = selectedService.subServices ? () => setStep(1.5) : resetFlow; const backText = selectedService.subServices ? selectedService.title : 'Categorias'; return ( <ScrollView style={styles.page}><TouchableOpacity style={styles.backButton} onPress={backAction}><BackArrowIcon /><Text style={styles.backButtonText}>{backText}</Text></TouchableOpacity><Text style={styles.greeting}>{serviceTitle}</Text><Text style={styles.sectionTitle}>Escolha uma data</Text><CalendarDays selectedDate={selectedDate} onDateSelect={handleDateSelect} />{selectedDate && ( <> <Text style={styles.sectionTitle}>Horários para {selectedDate.split('-').reverse().join('/')}</Text>{timeSlots.length > 0 ? ( <View style={styles.timeSlotContainer}>{timeSlots.map(slot => ( <TouchableOpacity key={slot.iso} style={[styles.timeSlot, slot.isBooked && styles.timeSlotBooked, selectedTime?.iso === slot.iso && styles.timeSlotSelected]} disabled={slot.isBooked} onPress={() => setSelectedTime(slot)}><Text style={[styles.timeSlotText, slot.isBooked && styles.timeSlotTextBooked, selectedTime?.iso === slot.iso && styles.timeSlotTextSelected]}>{slot.time}</Text></TouchableOpacity> ))} </View> ) : ( <ActivityIndicator style={{marginTop: 20}} color="#E6AAB7"/> )}</> )}{selectedTime && ( <TouchableOpacity style={[styles.primaryButton, {marginTop: 30}]} onPress={handleConfirmarAgendamento}><Text style={styles.primaryButtonText}>Confirmar Agendamento ({selectedTime.time})</Text></TouchableOpacity> )}<View style={{ height: 50 }} /></ScrollView> ); }
+  if (step === 1) { return ( <ScrollView style={styles.page}><Text style={styles.greeting}>Agendar Serviço</Text><Text style={styles.sectionTitle}>Escolha uma Categoria</Text>{SERVICES_DATA.map(service => ( <TouchableOpacity key={service.id} style={styles.serviceCard} onPress={() => handleServiceSelect(service)}><Image source={{ uri: service.image }} style={styles.serviceImage} resizeMode="cover"/><View style={styles.serviceTitleOverlay}><Text style={styles.serviceTitle}>{service.title}</Text></View></TouchableOpacity> ))}<View style={{ height: 100 }} /></ScrollView> ); }
+  else if (step === 1.5) { return ( <ScrollView style={styles.page}><TouchableOpacity style={styles.backButton} onPress={resetFlow}><BackArrowIcon /><Text style={styles.backButtonText}>Categorias</Text></TouchableOpacity><Text style={styles.greeting}>{selectedService.title}</Text><Text style={styles.sectionTitle}>Profissional</Text><View style={styles.proCard}><Image source={{ uri: selectedService.professional.photo }} style={styles.proPhoto} /><Text style={styles.proName}>{selectedService.professional.name}</Text></View><Text style={styles.sectionTitle}>Escolha o Serviço Específico</Text>{selectedService.subServices.map(sub => ( <TouchableOpacity key={sub.id} style={styles.subServiceCard} onPress={() => handleSubServiceSelect(sub)}><Text style={styles.subServiceTitle}>{sub.title}</Text><Text style={styles.subServiceButton}>Selecionar ›</Text></TouchableOpacity> ))}<View style={{ height: 100 }} /></ScrollView> ); }
+  else if (step === 2) {
+    const serviceTitle = selectedSubService?.title || selectedService.title;
+    const backAction = selectedService.subServices ? () => setStep(1.5) : resetFlow;
+    const backText = selectedService.subServices ? selectedService.title : 'Categorias';
+    return (
+      <ScrollView style={styles.page}>
+        <TouchableOpacity style={styles.backButton} onPress={backAction}><BackArrowIcon /><Text style={styles.backButtonText}>{backText}</Text></TouchableOpacity>
+        <Text style={styles.greeting}>{serviceTitle}</Text>
+        <Text style={styles.sectionTitle}>Escolha uma data</Text>
+        
+        <CalendarGrid selectedDate={selectedDate} onDateSelect={handleDateSelect} />
+
+        {/* CORREÇÃO DO BUG: Troca {!!selectedDate && ...} por {selectedDate ? ... : null} */}
+        {selectedDate ? (
+          <>
+            <Text style={styles.sectionTitle}>Horários para {selectedDate.split('-').reverse().join('/')}</Text>
+            {timeSlots.length > 0 ? (
+              <View style={styles.timeSlotContainer}>
+                {timeSlots.map(slot => (
+                  <TouchableOpacity
+                    key={slot.iso}
+                    style={[styles.timeSlot, slot.isBooked && styles.timeSlotBooked, selectedTime?.iso === slot.iso && styles.timeSlotSelected]}
+                    disabled={slot.isBooked}
+                    onPress={() => setSelectedTime(slot)}
+                  >
+                    <Text style={[styles.timeSlotText, slot.isBooked && styles.timeSlotTextBooked, selectedTime?.iso === slot.iso && styles.timeSlotTextSelected]}>
+                      {slot.time}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ) : ( <ActivityIndicator style={{marginTop: 20}} color="#E6AAB7"/> )}
+          </>
+        ) : null}
+        
+        {/* CORREÇÃO DO BUG: Troca {!!selectedTime && ...} por {selectedTime ? ... : null} */}
+        {selectedTime ? (
+          <TouchableOpacity style={[styles.primaryButton, {marginTop: 30}]} onPress={handleConfirmarHorario}>
+            <Text style={styles.primaryButtonText}>Ir para Pagamento ({selectedTime.time})</Text>
+          </TouchableOpacity>
+        ) : null}
+        
+        <View style={{ height: 100 }} />
+      </ScrollView>
+    );
+  }
 };
+
+// --- TELA DE PAGAMENTO (Corrigido bug de texto) ---
+const PaymentScreen = ({ onNavigate, route }) => {
+  const { booking } = route.params;
+  const { user, profile } = useAuth();
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Links do Google Form (SUBSTITUA PELOS SEUS REAIS)
+  const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdmt0zSjqnfk7OYxqe-BLuPSg_QGxDRuRpq_XHcFtHALRsNzQ/formResponse";
+  const FORM_FIELDS = {
+    name: "entry.988013807",
+    email: "entry.1763337415",
+    service: "entry.1709721439",
+    professional: "entry.362379737",
+    date: "entry.739241075",
+    time: "entry.1416154982",
+  };
+
+  const sendToGoogleForms = async () => {
+    if (!profile || !user) return;
+    const formData = new FormData();
+    formData.append(FORM_FIELDS.name, profile.fullName);
+    formData.append(FORM_FIELDS.email, user.email);
+    formData.append(FORM_FIELDS.service, booking.serviceTitle);
+    formData.append(FORM_FIELDS.professional, booking.professional);
+    formData.append(FORM_FIELDS.date, booking.date);
+    formData.append(FORM_FIELDS.time, booking.time);
+    try {
+      await fetch(GOOGLE_FORM_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+      console.log("Notificação enviada para Google Forms!");
+      return true;
+    } catch (error) {
+      console.error("Erro ao enviar para Google Forms:", error);
+      Alert.alert("Erro de Notificação", "Não foi possível notificar o profissional. Tente mais tarde.");
+      return false;
+    }
+  };
+
+  const handleFinalConfirm = async () => {
+    if (!agreedToTerms) { Alert.alert("Termos", "Você precisa aceitar os termos de cancelamento para continuar."); return; }
+    setIsLoading(true);
+    console.log("Simulando pagamento...");
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    console.log("Pagamento simulado concluído.");
+    const notificationSent = await sendToGoogleForms();
+    setIsLoading(false);
+    if (notificationSent) {
+      Alert.alert("Agendamento Concluído!", "Seu horário foi confirmado. O profissional foi notificado.");
+      onNavigate('mainApp', { activeTab: 'inicio' });
+    }
+  };
+
+  return (
+    <ScrollView style={styles.page}>
+      {/* CORREÇÃO DO BUG "Text strings...": O texto 'Voltar' estava fora do <Text> */}
+      <TouchableOpacity style={styles.backButton} onPress={() => onNavigate('mainApp', { activeTab: 'agendamentos' })}>
+        <BackArrowIcon />
+        <Text style={styles.backButtonText}>Voltar</Text> 
+      </TouchableOpacity>
+      <Text style={styles.greeting}>Confirmar Agendamento</Text>
+
+      <View style={styles.profileCard}>
+        <Text style={styles.sectionTitle}>Resumo</Text>
+        <Text style={styles.summaryText}>Serviço: {booking.serviceTitle}</Text>
+        <Text style={styles.summaryText}>Profissional: {booking.professional}</Text>
+        <Text style={styles.summaryText}>Data: {booking.date.split('-').reverse().join('/')}</Text>
+        <Text style={styles.summaryText}>Horário: {booking.time}</Text>
+      </View>
+
+      <View style={[styles.profileCard, {marginTop: 20}]}>
+          <Text style={styles.sectionTitle}>Termos de Cancelamento</Text>
+          <Text style={styles.termsText}>
+            Ao confirmar, você concorda com nossa política de cancelamento.
+            Cancelamentos feitos com menos de 24 horas de antecedência do horário agendado estarão sujeitos a uma
+            <Text style={{fontWeight: 'bold'}}> taxa de cancelamento de 30%</Text> do valor total do serviço.
+          </Text>
+          <TouchableOpacity style={styles.checkboxContainer} onPress={() => setAgreedToTerms(!agreedToTerms)}>
+              <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
+                  {agreedToTerms && <CheckIcon />}
+              </View>
+              <Text style={styles.checkboxLabel}>Li e concordo com os termos.</Text>
+          </TouchableOpacity>
+      </View>
+      
+      <TouchableOpacity 
+        style={[styles.primaryButton, {marginTop: 30, backgroundColor: agreedToTerms ? '#E6AAB7' : '#CCC'}]} 
+        onPress={handleFinalConfirm}
+        disabled={isLoading || !agreedToTerms}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="#FFF" /> 
+        ) : (
+          <Text style={styles.primaryButtonText}>Confirmar e Pagar (Simulado)</Text>
+        )}
+      </TouchableOpacity>
+      <View style={{ height: 100 }} />
+    </ScrollView>
+  );
+};
+
+
 const ExplorarScreen = () => (<View style={styles.page}><Text style={styles.greeting}>Explorar</Text><Text style={styles.subtitle}>Descubra novos serviços e promoções em breve!</Text></View>);
 
 const PerfilScreen = ({ onLogout }) => {
   const { user, isGuest, profile } = useAuth();
-  const [isLoading, setIsLoading] = useState(false); const [isUploading, setIsUploading] = useState(false); const [isEditing, setIsEditing] = useState(false); const [editName, setEditName] = useState(profile?.fullName || ''); const [editPhone, setEditPhone] = useState(profile?.phone || '');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(profile?.fullName || '');
+  const [editPhone, setEditPhone] = useState(profile?.phone || '');
   const { refreshProfile } = useContext(AuthContext);
 
   useEffect(() => { setEditName(profile?.fullName || ''); setEditPhone(profile?.phone || ''); }, [profile]);
-
-  const pickImage = async () => { if (isUploading || !auth || !storage) return; const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync(); if (!permissionResult.granted) { Alert.alert("Permissão necessária."); return; } try { let result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, allowsEditing: true, aspect: [1, 1], quality: 0.5 }); if (!result.canceled && result.assets && result.assets.length > 0) { uploadImage(result.assets[0].uri); } } catch (pickerError) { console.error("Erro Image Picker:", pickerError); Alert.alert("Erro", "Não foi possível abrir a galeria."); } };
-  const uploadImage = async (uri) => { if (!user || !user.uid || !storage || !db) return; setIsUploading(true); try { const response = await fetch(uri); const blob = await response.blob(); const storageRef = ref(storage, `profile_pictures/${user.uid}`); const uploadTask = uploadBytesResumable(storageRef, blob); uploadTask.on('state_changed', () => {}, async (error) => { console.error("Erro upload:", error.code, error.message); Alert.alert("Erro de Upload", `Falha no upload (${error.code}). Tente novamente.`); setIsUploading(false); }, async () => { try { const downloadURL = await getDownloadURL(uploadTask.snapshot.ref); const userDocRef = doc(db, "users", user.uid); await updateDoc(userDocRef, { photoURL: downloadURL }); await refreshProfile(user.uid); Alert.alert("Sucesso", "Foto atualizada!"); } catch (updateError) { console.error("Erro ao atualizar Firestore:", updateError); Alert.alert("Erro", "Upload concluído, mas falha ao salvar no perfil."); } finally { setIsUploading(false); } }); } catch (error) { console.error("Erro preparar upload:", error); Alert.alert("Erro", "Falha ao processar a imagem para upload."); setIsUploading(false); } };
-  const handleSaveChanges = async () => { if (!user || !user.uid || !db) return; if (editName.trim() === '' || editPhone.trim() === '') { Alert.alert("Erro", "Preencha Nome e Celular."); return; } setIsLoading(true); try { const userDocRef = doc(db, "users", user.uid); await updateDoc(userDocRef, { fullName: editName.trim(), phone: editPhone.trim(), }); await refreshProfile(user.uid); setIsEditing(false); Alert.alert("Sucesso", "Perfil atualizado!"); } catch (error) { console.error("Erro atualizar perfil:", error); Alert.alert("Erro", "Não foi possível salvar as alterações."); } finally { setIsLoading(false); } };
   
-  // Adiciona a pasta 'assets' no caminho
-  const photoSource = profile?.photoURL ? { uri: profile.photoURL } : require('./assets/avatar-placeholder.png'); 
+  const handleSaveChanges = async () => {
+    if (!user || !user.uid || !db) return;
+    if (editName.trim() === '' || editPhone.trim() === '') {
+      Alert.alert("Erro", "Preencha Nome e Celular.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, {
+        fullName: editName.trim(),
+        phone: editPhone.trim(),
+      });
+      await refreshProfile(user.uid);
+      setIsEditing(false);
+      Alert.alert("Sucesso", "Perfil atualizado!");
+    } catch (error) {
+      console.error("Erro atualizar perfil:", error);
+      Alert.alert("Erro", "Não foi possível salvar as alterações.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const photoSource = require('./assets/avatar-placeholder.png'); 
 
   return (
     <ScrollView style={styles.page}>
@@ -258,10 +474,8 @@ const PerfilScreen = ({ onLogout }) => {
           <View style={styles.profileCard}><Text style={styles.profileName}>Visitante</Text><TouchableOpacity style={[styles.primaryButton, {marginTop: 20}]} onPress={onLogout}><Text style={styles.primaryButtonText}>Login/Cadastro</Text></TouchableOpacity></View>
       ) : (
         <View style={styles.profileCard}>
-            <TouchableOpacity onPress={pickImage} disabled={isUploading}>
-              <Image source={photoSource} style={styles.profilePhoto} onError={(e) => console.log("Erro carregando imagem:", e.nativeEvent.error)} key={profile?.photoURL || 'placeholder'} />
-              <View style={styles.cameraIconOverlay}>{isUploading ? <ActivityIndicator size="small" color="#FFF"/> : <CameraIcon />}</View>
-            </TouchableOpacity>
+            <Image source={photoSource} style={styles.profilePhoto} />
+            
             {isEditing ? (
               <>
                 <View style={styles.inputContainerInline}><PersonIcon /><TextInput style={styles.inputInline} value={editName} onChangeText={setEditName} placeholder="Nome Completo" autoCapitalize="words" placeholderTextColor="#AAA"/></View>
@@ -280,12 +494,16 @@ const PerfilScreen = ({ onLogout }) => {
             <TouchableOpacity style={styles.logoutButton} onPress={onLogout}><LogoutIcon /><Text style={styles.logoutButtonText}>Sair da Conta</Text></TouchableOpacity>
         </View>
       )}
-       <View style={{ height: 50 }} />
+       <View style={{ height: 100 }} />
     </ScrollView>
   );
 };
 const TabBar = ({ activeTab, onTabPress }) => ( <View style={styles.tabBar}><TouchableOpacity style={styles.tabItem} onPress={() => onTabPress('inicio')}><HomeIcon color={activeTab === 'inicio' ? "#A78B4F" : "#C0B49D"} /><Text style={[styles.tabLabel, { color: activeTab === 'inicio' ? '#A78B4F' : '#C0B49D' }]}>Início</Text></TouchableOpacity><TouchableOpacity style={styles.tabItem} onPress={() => onTabPress('agendamentos')}><CalendarIcon color={activeTab === 'agendamentos' ? "#A78B4F" : "#C0B49D"} /><Text style={[styles.tabLabel, { color: activeTab === 'agendamentos' ? '#A78B4F' : '#C0B49D' }]}>Agendar</Text></TouchableOpacity><TouchableOpacity style={styles.tabItem} onPress={() => onTabPress('explorar')}><SearchIcon color={activeTab === 'explorar' ? "#A78B4F" : "#C0B49D"} /><Text style={[styles.tabLabel, { color: activeTab === 'explorar' ? '#A78B4F' : '#C0B49D' }]}>Explorar</Text></TouchableOpacity><TouchableOpacity style={styles.tabItem} onPress={() => onTabPress('perfil')}><UserIcon color={activeTab === 'perfil' ? "#A78B4F" : "#C0B49D"} /><Text style={[styles.tabLabel, { color: activeTab === 'perfil' ? '#A78B4F' : '#C0B49D' }]}>Perfil</Text></TouchableOpacity></View> );
-const MainApp = ({ onNavigate, route, onLogout }) => { const initialTab = route?.params?.activeTab || 'inicio'; const [activeTab, setActiveTab] = useState(initialTab); const renderContent = () => { switch (activeTab) { case 'agendamentos': return <AgendamentosScreen onNavigate={onNavigate} />; case 'explorar': return <ExplorarScreen />; case 'perfil': return <PerfilScreen onLogout={onLogout} />; case 'inicio': default: return <HomeScreen onNavigateToAgendamentos={() => setActiveTab('agendamentos')} />; } }; return ( <View style={{ flex: 1, backgroundColor: '#FDF5F7' }}>{renderContent()}<TabBar activeTab={activeTab} onTabPress={setActiveTab} /></View> ); };
+const MainApp = ({ onNavigate, route, onLogout }) => { const initialTab = route?.params?.activeTab || 'inicio'; const [activeTab, setActiveTab] = useState(initialTab);
+  useEffect(() => { if (route?.params?.activeTab) { setActiveTab(route.params.activeTab); } }, [route]);
+  const renderContent = () => { switch (activeTab) { case 'agendamentos': return <AgendamentosScreen onNavigate={onNavigate} />; case 'explorar': return <ExplorarScreen />; case 'perfil': return <PerfilScreen onLogout={onLogout} />; case 'inicio': default: return <HomeScreen onNavigateToAgendamentos={() => setActiveTab('agendamentos')} />; } };
+  return ( <View style={{ flex: 1, backgroundColor: '#FDF5F7' }}>{renderContent()}<TabBar activeTab={activeTab} onTabPress={setActiveTab} /></View> );
+};
 
 // --- O Roteador Principal ---
 export default function App() {
@@ -322,7 +540,7 @@ export default function App() {
          console.error("Erro de Inicialização:", firebaseInitializationError.message);
      }
      setIsLoadingAuth(false);
-     setScreen('error'); // Tela de erro dedicada
+     setScreen('error');
      return;
    }
    console.log("App: Configurando onAuthStateChanged listener...");
@@ -366,7 +584,7 @@ export default function App() {
       setRouteParams({ params }); setScreen(newScreen);
     }
  };
- const handleLogout = async () => { console.log("App: handleLogout iniciado..."); if (!auth) return; try { await signOut(auth); setIsGuest(false); /* onAuthStateChanged cuidará do resto */ } catch (error) { console.error("App: Erro no handleLogout:", error); } };
+ const handleLogout = async () => { console.log("App: handleLogout iniciado..."); if (!auth) return; try { await signOut(auth); setIsGuest(false); } catch (error) { console.error("App: Erro no handleLogout:", error); } };
 
  const renderScreen = () => {
    console.log(`App: renderScreen chamado. isLoadingAuth: ${isLoadingAuth}, screen: ${screen}`);
@@ -376,7 +594,6 @@ export default function App() {
      return <View style={styles.container}><ActivityIndicator size="large" color="#E6AAB7" /></View>;
    }
    
-   // Tela de Erro se o Firebase falhar na inicialização (ex: API key errada)
    if (firebaseInitializationError || screen === 'error' || (!auth || !db)) {
        console.error("App: Renderizando Erro de Inicialização Firebase");
        return (
@@ -385,7 +602,6 @@ export default function App() {
                     <Text style={{color: 'red', textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 20}}>Erro Crítico</Text>
                     <Text style={{color: 'red', textAlign: 'center', marginBottom: 10}}>Falha ao inicializar o Firebase.</Text>
                     <Text style={{color: 'red', textAlign: 'center', marginBottom: 40}}>Verifique se a `firebaseConfig` no App.js está correta e se sua rede está funcionando.</Text>
-                    {/* Exibe o erro real para depuração */}
                     <Text style={{color: '#555', textAlign: 'center', fontSize: 12}}>Detalhes: {firebaseInitializationError?.message || 'auth/db nulos'}</Text>
                 </View>
            </SafeAreaView>
@@ -394,7 +610,6 @@ export default function App() {
 
 
    const props = { onNavigate: handleNavigate, route: routeParams };
-   // Passa a função refreshProfile para o contexto
    const authContextValue = { user, profile, isGuest, refreshProfile };
    console.log(`App: Renderizando tela: ${screen}`);
 
@@ -406,7 +621,9 @@ export default function App() {
          {screen === 'login' && <LoginScreen {...props} />}
          {screen === 'register' && <RegisterScreen {...props} />}
          {screen === 'completeProfile' && <CompleteProfileScreen {...props} />}
-         {!['mainApp', 'welcome', 'login', 'register', 'completeProfile', 'loading', 'error'].includes(screen) &&
+         {screen === 'payment' && <PaymentScreen {...props} />} 
+         
+         {!['mainApp', 'welcome', 'login', 'register', 'completeProfile', 'loading', 'error', 'payment'].includes(screen) &&
              <View style={styles.container}><Text>Tela desconhecida: {screen}</Text></View>
          }
        </AuthContext.Provider>
@@ -419,7 +636,8 @@ export default function App() {
 // --- ESTILOS ---
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FDF5F7' },
-  page: { flex: 1, backgroundColor: '#FDF5F7', paddingHorizontal: 20, paddingTop: 40, paddingBottom: 100 },
+  // CORREÇÃO DO BUG DO BOTÃO: Removido 'flex: 1' e adicionado 'minHeight: '100%''
+  page: { backgroundColor: '#FDF5F7', paddingHorizontal: 20, paddingTop: 40, minHeight: '100%' },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30, backgroundColor: '#FDF5F7' },
   title: { fontFamily: "serif", fontSize: 42, fontWeight: 'bold', color: '#D4AF37', textAlign: 'center', marginBottom: 10 },
   subtitle: { fontSize: 16, color: '#8A74A8', textAlign: 'center', marginBottom: 40 },
@@ -448,10 +666,9 @@ const styles = StyleSheet.create({
   tabBar: { position: 'absolute', bottom: 0, left: 0, right: 0, height: Platform.OS === 'ios' ? 100 : 90, paddingTop: 10, paddingBottom: Platform.OS === 'ios' ? 30 : 20, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#F0F0F0', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-start', },
   tabItem: { alignItems: 'center', flex: 1, },
   tabLabel: { fontSize: 12, color: '#C0B49D', marginTop: 4, },
-  // Perfil
+  // Perfil (Sem Foto)
   profileCard: { width: '100%', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 20, padding: 30, marginTop: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5, },
   profilePhoto: { width: 120, height: 120, borderRadius: 60, marginBottom: 20, backgroundColor: '#EEE' },
-  cameraIconOverlay: { position: 'absolute', bottom: 15, right: 0, backgroundColor: 'rgba(0,0,0,0.5)', padding: 8, borderRadius: 15 },
   profileName: { fontSize: 24, fontWeight: 'bold', color: '#333', marginTop: 10, textAlign: 'center' },
   profileEmail: { fontSize: 16, color: '#777', marginTop: 4, textAlign: 'center' },
   profilePhone: { fontSize: 16, color: '#555', marginTop: 10, fontWeight: '500', textAlign: 'center' },
@@ -474,13 +691,16 @@ const styles = StyleSheet.create({
   subServiceCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFF', padding: 20, borderRadius: 15, marginBottom: 10, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
   subServiceTitle: { fontSize: 16, fontWeight: 'bold', color: '#333', flexShrink: 1, marginRight: 10 },
   subServiceButton: { fontSize: 14, fontWeight: 'bold', color: '#E6AAB7' },
-  calendar: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#FFF', borderRadius: 15, paddingVertical: 10, marginBottom: 20, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
-  dateCell: { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 5, borderRadius: 10, width: 55 },
+  // CALENDÁRIO CORRIGIDO
+  calendarGrid: { backgroundColor: '#FFF', borderRadius: 15, padding: 10, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
+  calendarRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 5 },
+  dateCell: { alignItems: 'center', paddingVertical: 10, borderRadius: 10, width: 45, height: 60, justifyContent: 'center' }, // Largura fixa
   dateCellSelected: { backgroundColor: '#E6AAB7' },
-  dateText: { fontSize: 18, fontWeight: 'bold', color: '#333' },
-  dateTextSelected: { color: '#FFF' },
-  dateDay: { fontSize: 12, color: '#8A74A8' },
+  dateDay: { fontSize: 12, color: '#8A74A8', fontWeight: 'bold' },
   dateDaySelected: { color: '#FFF' },
+  dateText: { fontSize: 18, fontWeight: 'bold', color: '#333', marginTop: 4 },
+  dateTextSelected: { color: '#FFF' },
+  // FIM DO CALENDÁRIO
   timeSlotContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 10, },
   timeSlot: { width: '31%', paddingVertical: 15, backgroundColor: '#FFF', borderRadius: 10, alignItems: 'center', marginBottom: 10, borderWidth: 1, borderColor: '#EEE' },
   timeSlotText: { color: '#333', fontWeight: 'bold' },
@@ -488,5 +708,11 @@ const styles = StyleSheet.create({
   timeSlotTextBooked: { color: '#AAA', textDecorationLine: 'line-through' },
   timeSlotSelected: { backgroundColor: '#E6AAB7', borderColor: '#E6AAB7' },
   timeSlotTextSelected: { color: '#FFF', fontWeight: 'bold' },
+  // TELA DE PAGAMENTO
+  summaryText: { fontSize: 16, color: '#333', marginBottom: 10, lineHeight: 22 },
+  termsText: { fontSize: 14, color: '#555', lineHeight: 20, marginBottom: 20, },
+  checkboxContainer: { flexDirection: 'row', alignItems: 'center', width: '100%', marginBottom: 20 },
+  checkbox: { width: 24, height: 24, borderRadius: 6, borderWidth: 2, borderColor: '#E6AAB7', backgroundColor: '#FFF', marginRight: 12, justifyContent: 'center', alignItems: 'center' },
+  checkboxChecked: { backgroundColor: '#E6AAB7' },
+  checkboxLabel: { fontSize: 16, color: '#333', flex: 1 },
 });
-
