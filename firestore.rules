@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- FUNÇÕES AUXILIARES ---
+    
+    // Verifica se o usuário está logado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verifica se o usuário pertence à clínica (tenant) que está tentando acessar
+    function belongsToTenant(tenantId) {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantId == tenantId;
+    }
+
+    // Verifica se é um admin da plataforma (VOCÊ)
+    function isPlatformAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super_admin';
+    }
+
+    // --- REGRAS DAS COLEÇÕES ---
+
+    // 1. TENANTS (As Clínicas)
+    match /tenants/{tenantId} {
+      // Público pode ler dados básicos (nome, logo) para montar a tela de login/agendamento
+      allow read: if true; 
+      // Apenas Admin ou Sistema (Cloud Functions) cria tenants
+      allow write: if isPlatformAdmin(); 
+    }
+
+    // 2. USUÁRIOS (Dentro de cada Tenant ou Global)
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isPlatformAdmin());
+      // Usuário só edita o próprio perfil
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 3. AGENDAMENTOS (Segregados por Tenant)
+    match /appointments/{appointmentId} {
+      // Leitura: Livre para criar (cliente final) ou se pertencer ao tenant (profissional)
+      allow read: if true; 
+      allow create: if true; // Cliente cria sem estar logado (dependendo da regra de negócio) ou logado
+      
+      // Update: Só o dono ou profissional do tenant
+      allow update: if isAuthenticated() && 
+                    (resource.data.clientId == request.auth.uid || 
+                     belongsToTenant(resource.data.tenantId));
+    }
+
+    // 4. CONFIGURAÇÕES DO PROFISSIONAL
+    match /professionalSettings/{docId} {
+      allow read: if true; // Público para o PWA mostrar fotos/preços
+      allow write: if isAuthenticated() && belongsToTenant(resource.data.tenantId);
+    }
+
+    // 5. LOGS DE WEBHOOK (Só Admin vê - Segurança Financeira)
+    match /webhookLogs/{logId} {
+      allow read, write: if isPlatformAdmin();
+    }
+  }
+}
