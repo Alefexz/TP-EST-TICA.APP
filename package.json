@@ -1,0 +1,20 @@
+{
+  "name": "estetione",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "echo 'Use scripts individuais por enquanto'",
+    "dev:landing": "cd packages/landing && npm run dev",
+    "dev:dashboard": "cd packages/dashboard && npm run dev",
+    "dev:public": "cd packages/public-site && npm run dev",
+    "dev:api": "cd packages/api && npm run dev",
+    "install-all": "npm install && cd packages/landing && npm install && cd ../dashboard && npm install && cd ../public-site && npm install && cd ../api && npm install",
+    "start": "concurrently \"npm run dev:landing\" \"npm run dev:dashboard\" \"npm run dev:public\" \"npm run dev:api\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

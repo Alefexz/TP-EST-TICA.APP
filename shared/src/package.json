@@ -1,0 +1,13 @@
+{
+  "name": "@estetione/shared",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "echo 'Shared build'"
+  },
+  "dependencies": {
+    "firebase": "^10.7.0",
+    "axios": "^1.6.0"
+  }
+}

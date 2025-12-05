@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+*/node_modules/
+ECHO est  desativado.
+# Environment
+.env
+*.env.local
+ECHO est  desativado.
+# Build outputs
+dist/
+build/
+web-build/
+ECHO est  desativado.
+# Firebase
+google-services.json
+GoogleService-Info.plist
+ECHO est  desativado.
+# System
+.DS_Store
+Thumbs.db
+ECHO est  desativado.
+# White-label builds
+white-label/*/
+!white-label/builder.js
+!white-label/README.md
