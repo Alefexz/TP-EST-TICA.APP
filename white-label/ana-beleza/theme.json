@@ -1,0 +1,14 @@
+{
+  "theme": {
+    "primary": "#FF6B8B",
+    "secondary": "#FFA726",
+    "name": "Ana Beleza",
+    "logo": "💅",
+    "clientId": "ana-beleza"
+  },
+  "firebase": {
+    "apiKey": "{{CLIENT_FIREBASE_API_KEY}}",
+    "authDomain": "{{CLIENT_FIREBASE_AUTH_DOMAIN}}",
+    "projectId": "{{CLIENT_FIREBASE_PROJECT_ID}}"
+  }
+}

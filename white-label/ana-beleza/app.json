@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "EstetiOne",
-    "slug": "estetione",
+    "name": "Ana Beleza",
+    "slug": "ana-beleza",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,10 +11,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#7C3AED"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.estetione.app",
+      "bundleIdentifier": "com.anabeleza.app",
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
@@ -22,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#7C3AED"
       },
-      "package": "com.estetione.app",
+      "package": "com.anabeleza.app",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -30,17 +32,20 @@
       "bundler": "metro",
       "output": "single",
       "scope": "/",
-      "startUrl": "/",
+      "startUrl": "https://anabeleza.estetione.com",
       "lang": "pt-BR",
-      "name": "EstetiOne",
-      "shortName": "EstetiOne",
+      "name": "Ana Beleza",
+      "shortName": "Ana Beleza",
       "description": "Sistema de agendamento para profissionais de beleza",
-      "themeColor": "#7C3AED",
+      "themeColor": "#FF6B8B",
       "backgroundColor": "#FFFFFF",
       "display": "standalone",
       "orientation": "portrait"
     },
-    "plugins": ["expo-font", "expo-router"],
+    "plugins": [
+      "expo-font",
+      "expo-router"
+    ],
     "extra": {
       "eas": {
         "projectId": "6f62a806-18e4-4195-95a4-4cf6fc699746"
@@ -56,6 +61,7 @@
     "updates": {
       "url": "https://u.expo.dev/6f62a806-18e4-4195-95a4-4cf6fc699746",
       "fallbackToCacheTimeout": 0
-    }
+    },
+    "primaryColor": "#FF6B8B"
   }
 }
