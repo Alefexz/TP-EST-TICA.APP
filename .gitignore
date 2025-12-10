@@ -1,25 +1,45 @@
 # Dependencies
 node_modules/
 */node_modules/
-ECHO est  desativado.
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 # Environment
 .env
-*.env.local
-ECHO est  desativado.
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # Build outputs
 dist/
 build/
+.webpack/
 web-build/
-ECHO est  desativado.
+.expo/
+
 # Firebase
 google-services.json
 GoogleService-Info.plist
-ECHO est  desativado.
-# System
+firebase-debug.log
+
+# Sistema
 .DS_Store
 Thumbs.db
-ECHO est  desativado.
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
 # White-label builds
-white-label/*/
-!white-label/builder.js
-!white-label/README.md
+packages/dashboard/white-label/*/
+!packages/dashboard/white-label/builder.js
+!packages/dashboard/white-label/README.md
